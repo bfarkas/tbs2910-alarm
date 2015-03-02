@@ -1,0 +1,43 @@
+--- include/configs/tbs2910.h	2015-03-02 18:53:12.308898000 +0100
++++ include/configs/tbs2910.h.new	2015-03-02 18:49:07.640898000 +0100
+@@ -212,9 +212,10 @@
+ 
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"bootargs_mmc1=console=ttymxc0,115200 di0_primary console=tty1\0" \
+-	"bootargs_mmc2=video=mxcfb0:dev=hdmi,1920x1080M@60 " \
++	"bootargs_mmc2=video=mxcfb1:dev=ldb,LDB-XGA,if=RGB666 " \
++			"video=mxcfb0:dev=hdmi,1920x1080M@60,if=RGB24 " \
+ 			"video=mxcfb1:off video=mxcfb2:off fbmem=28M\0" \
+-	"bootargs_mmc3=root=/dev/mmcblk0p1 rootwait consoleblank=0 quiet\0" \
++	"bootargs_mmc3=root=/dev/mmcblk0p1 rw rootwait consoleblank=0 quiet\0" \
+ 	"bootargs_mmc=setenv bootargs ${bootargs_mmc1} ${bootargs_mmc2} " \
+ 			"${bootargs_mmc3}\0" \
+ 	"bootargs_upd=setenv bootargs console=ttymxc0,115200 " \
+@@ -225,6 +226,12 @@
+ 	"bootcmd_up2=load mmc 1 0x10d00000 uramdisk.img; " \
+ 			"run bootargs_upd; " \
+ 			"bootm 0x10800000 0x10d00000\0" \
++	"emmcboot=run bootargs_mmc; mmc dev 2; " \
++			"load mmc 2:1 0x12000000 /boot/zImage; " \
++			"load mmc 2:1 0x18000000 /boot/dtbs/imx6q-tbs2910.dtb; " \
++			"bootz 0x12000000 - 0x18000000\0" \
++	"initrd_high=0xfffffff\0" \
++	"fdt_high=0xffffffff\0" \
+ 	"console=ttymxc0\0" \
+ 	"fan=gpio set 92\0" \
+ 	"stdin=serial,usbkbd\0" \
+@@ -232,11 +239,12 @@
+ 	"stderr=serial,vga\0"
+ 
+ #define CONFIG_BOOTCOMMAND \
+-	"mmc rescan; " \
++	"run emmcboot;"
++/*	"mmc rescan; " \
+ 	"if run bootcmd_up1; then " \
+ 		"run bootcmd_up2; " \
+ 	"else " \
+ 		"run bootcmd_mmc; " \
+ 	"fi"
+-
++*/
+ #endif			       /* __TBS2910_CONFIG_H * */
